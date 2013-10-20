@@ -5,7 +5,6 @@ import scala.concurrent.duration.Duration
 
 import org.specs2.mutable.Specification 
 
-import scala.slick.session.Session
 import scala.slick.driver.H2Driver.simple._
 
 class WorkerSpec extends Specification with WorkerPoolProvider {
