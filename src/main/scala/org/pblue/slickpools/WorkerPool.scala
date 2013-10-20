@@ -22,6 +22,6 @@ class WorkerPool(
 			name = name)
 
 	def execute[T : ClassTag](fn: Session => T)(implicit timeout: Timeout = defaultTimeout) = 
-		ask(router, Payload(fn)).mapTo[T]
+		ask(router, Job(fn)).mapTo[T]
 
 }

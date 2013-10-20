@@ -18,7 +18,7 @@ class Worker(ds: Datasource) extends Actor {
 	}
 
 	def receive = {
-		case Payload(fn) => sender ! fn(session)
+		case Job(fn) => sender ! fn(session)
 	}
 
 }
