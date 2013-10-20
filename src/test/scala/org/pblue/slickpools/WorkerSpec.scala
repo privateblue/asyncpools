@@ -34,7 +34,7 @@ class WorkerSpec extends Specification with WorkerPoolFactory {
 
 	"Test data" should {
 		
-		"should be stored and retrieved" in { 
+		"be stored and retrieved" in { 
 			val storedFibs =
 				testPool.execute { implicit session => 
 					setupDb
