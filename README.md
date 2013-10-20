@@ -69,7 +69,7 @@ object MyRepository extends MyPools {
 		
 }
 ```
-Jobs are executed asynchronously and in parallel. Thus you can basically contain blocking i/o in a dedicated thread pool, hide the synchronous nature of JDBC behind it, and continue coding in a reactive way in the rest of your application.
+Jobs are executed asynchronously, as Slickpools always return Future's, and are executed in parallel, as they are passed to a pool of workers through a round-robin router. Thus you can basically contain blocking i/o in a separate thread pool, hide the synchronous nature of JDBC behind it, and continue coding in a reactive way in the rest of your application.
 
 You can set a job timeout for every Pool.execute call by having an implicit value of type akka.util.Timeout in scope, or fall back to a default timeout configured per pool. 
 
