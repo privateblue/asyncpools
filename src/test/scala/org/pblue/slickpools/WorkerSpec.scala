@@ -7,7 +7,7 @@ import org.specs2.mutable.Specification
 
 import scala.slick.driver.H2Driver.simple._
 
-class WorkerSpec extends Specification with WorkerPoolProvider {
+class WorkerSpec extends Specification with WorkerPoolFactory {
 
 	private val testPool = newConfiguredPool("test")
 

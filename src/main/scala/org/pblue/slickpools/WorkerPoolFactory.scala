@@ -7,7 +7,7 @@ import akka.util.Timeout
 
 import com.typesafe.config.{ Config, ConfigFactory }
 
-trait WorkerPoolProvider extends PoolProvider {
+trait WorkerPoolFactory extends PoolFactory {
 
 	private lazy val appConfig = ConfigFactory.load
 

@@ -2,7 +2,7 @@ package org.pblue.slickpools
 
 import com.typesafe.config.Config
 
-trait PoolProvider {
+trait PoolFactory {
 	val configRoot = "slickpools"
 
 	def newConfiguredPool(name: String)(implicit config: Config): Pool

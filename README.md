@@ -33,9 +33,9 @@ slickpools {
 ```
 After that, you can instantiate these pools in your code:
 ```scala
-import org.pblue.slickpools.WorkerPoolProvider
+import org.pblue.slickpools.WorkerPoolFactory
 
-trait MyPools with WorkerPoolProvider {
+trait MyPools with WorkerPoolFactory {
 
 	val myReadPool = newConfiguredPool("my-read-pool")
 	
