@@ -43,7 +43,7 @@ trait MyPools with WorkerPoolProvider {
 	
 }
 ```
-This initializes an Akka actor system, and creates two router actors: my-read-pool and my-write-pool, each with as many routees as you configured as the size of the pool (5 and 2 in this case). Every such routee (or worker) has a connection to the database with the configured details (JDBC driver, connection url, user name, password).
+This initializes an Akka actor system, and creates two router actors: ```my-read-pool``` and ```my-write-pool```, each with as many routees as you configured as the size of the pool (5 and 2 in this case). Every such routee (or worker) has a connection to the database with the configured details (JDBC driver, connection url, user name, password).
 
 After setting up the pools, you can send some work to them:
 ```scala
@@ -69,8 +69,8 @@ object MyRepository extends MyPools {
 		
 }
 ```
-Jobs are executed asynchronously, as Slickpools always return Future's, and are executed in parallel, as they are passed to a pool of workers through a round-robin router. Thus you can basically contain blocking i/o in a separate thread pool, hide the synchronous nature of JDBC behind it, and continue coding in a reactive way in the rest of your application.
+Jobs are executed asynchronously, as Slickpools always return ```Future```'s, and are executed in parallel, as they are passed to a pool of workers through a round-robin router. Thus you can basically contain blocking I/O in a separate thread pool, hide the synchronous nature of JDBC behind it, and continue coding in a reactive way in the rest of your application.
 
-You can set a job timeout for every Pool.execute call by having an implicit value of type akka.util.Timeout in scope, or fall back to a default timeout configured per pool. 
+You can set a job timeout for every ```Pool.execute``` call by having an implicit value of type ```akka.util.Timeout``` in scope, or fall back to a default timeout configured per pool. 
 
 Slickpools requires Akka 2.2.1, Slick 1.0.1, Typesafe Config 1.0.0, H2 1.3.167 (for its unit tests) and Specs 2.2.1.
