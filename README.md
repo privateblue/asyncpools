@@ -35,7 +35,7 @@ After that, you can instantiate these pools in your code:
 ```scala
 import org.pblue.slickpools.WorkerPoolFactory
 
-trait MyPools with WorkerPoolFactory {
+object MyPools with WorkerPoolFactory {
 
 	val myReadPool = newConfiguredPool("my-read-pool")
 	
@@ -49,7 +49,7 @@ After setting up the pools, you can send some work to them:
 ```scala
 import scala.slick.driver.H2Driver.simple._
 
-object MyRepository extends MyPools {
+object MyRepository {
 
 	val table = new Table[(Int, String)]("my_table") {
 		def id = column[Int]("id", O.PrimaryKey)
@@ -58,12 +58,12 @@ object MyRepository extends MyPools {
 	}
 
 	def getName(id: Int): Future[String] =
-		myReadPool.execute { implicit session =>
+		MyPools.myReadPool execute { implicit session =>
 			Query(table).filter(_.id === id).map(_.name).first
 		}
 		
 	def insert(id: Int, name: String) =
-		myWritePool.execute { implicit session =>
+		MyPools.myWritePool execute { implicit session =>
 			table.insert((id, name))
 		}
 		
