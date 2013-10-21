@@ -1,6 +1,6 @@
 package org.pblue.slickpools
 
-import scala.concurrent.duration._
+import scala.concurrent.duration.Duration
 
 import akka.actor.ActorSystem
 import akka.util.Timeout

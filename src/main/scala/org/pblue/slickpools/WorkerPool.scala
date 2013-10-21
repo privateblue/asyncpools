@@ -1,9 +1,8 @@
 package org.pblue.slickpools
 
-import scala.concurrent.Future
 import scala.reflect.ClassTag
 
-import akka.actor.{ ActorSystem, Actor, Props }
+import akka.actor.{ ActorSystem, Props }
 import akka.routing.RoundRobinRouter
 import akka.pattern.ask
 import akka.util.Timeout
