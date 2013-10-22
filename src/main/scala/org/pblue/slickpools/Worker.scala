@@ -1,5 +1,7 @@
 package org.pblue.slickpools
 
+import scala.util.{ Success, Failure }
+
 import akka.actor.Actor
 
 import scala.slick.session.Database
@@ -18,7 +20,15 @@ class Worker(ds: Datasource) extends Actor {
 	}
 
 	def receive = {
-		case Job(fn) => sender ! fn(session)
+		case Job(fn) => 
+			val res = 
+				try {
+					Success(fn(session))
+				} catch {
+					case t: Throwable => Failure(t)
+				}
+			sender ! res
+
 	}
 
 }
