@@ -32,9 +32,9 @@ class WorkerSpec extends Specification with WorkerPoolFactory {
 		}
 	}
 
-	"Test data" should {
+	"execute" should {
 		
-		"be stored and retrieved" in { 
+		"retrieve previously stored data" in { 
 			val storedFibs =
 				testPool execute { implicit session => 
 					setupDb
@@ -48,15 +48,9 @@ class WorkerSpec extends Specification with WorkerPoolFactory {
 			result === control
 		}
 
-	}
-
-	"Exceptions" should {
-
-		"be sent out of workers, wrapped and thrown" in {
+		"wrap and re-throw exceptions thrown in worker" in {
 			val res =
 				testPool execute { implicit session =>
-					setupDb
-
 					Query(FibTable).filter(i => i.id === 30).first
 				}
 			Await.result(res, Duration("1 seconds")) must throwA[SlickpoolsException]
