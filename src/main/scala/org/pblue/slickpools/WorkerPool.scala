@@ -16,12 +16,14 @@ class WorkerPool(
 	name: String, 
 	size: Int, 
 	defaultTimeout: Timeout,
+	maxNrOfRetries: Int,
+	retryRange: Duration,
 	datasource: Datasource)(implicit actorSystem: ActorSystem) extends Pool {
 
 	private val supervisor = 
 		OneForOneStrategy(
-			maxNrOfRetries = 10, 
-	    	withinTimeRange = 1 minute) {
+			maxNrOfRetries = maxNrOfRetries, 
+	    	withinTimeRange = retryRange) {
 
 			case _: Throwable => Resume
 		}

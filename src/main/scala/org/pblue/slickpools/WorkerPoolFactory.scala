@@ -23,6 +23,10 @@ trait WorkerPoolFactory extends PoolFactory {
 		
 		val defaultTimeout = Timeout(Duration(poolConfig.getString("defaultTimeout")).toMillis)
 
+		val maxNrOfRetries = poolConfig.getInt("maxNrOfRetries")
+
+		val retryRange = Duration(poolConfig.getString("retryRange"))
+
 		val ds = 
 			Datasource(
 				url = poolConfig.getString("url"),
@@ -34,6 +38,8 @@ trait WorkerPoolFactory extends PoolFactory {
 			name = name,
 			size = size,
 			defaultTimeout = defaultTimeout,
+			maxNrOfRetries = maxNrOfRetries,
+			retryRange = retryRange,
 			datasource = ds)
 	}
 
