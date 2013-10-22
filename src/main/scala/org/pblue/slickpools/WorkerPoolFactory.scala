@@ -9,7 +9,7 @@ import com.typesafe.config.{ Config, ConfigFactory }
 
 trait WorkerPoolFactory extends PoolFactory {
 
-	private lazy val config = ConfigFactory.load.getConfig(configRoot)
+	private lazy val config = ConfigFactory.load
 
 	implicit val actorSystem = 
 		ActorSystem(
@@ -17,7 +17,7 @@ trait WorkerPoolFactory extends PoolFactory {
 			config)
 
 	def newConfiguredPool(name: String) = {
-		val poolConfig = config.getConfig(name)
+		val poolConfig = config.getConfig(s"${configRoot}.${name}")
 		
 		val size = poolConfig.getInt("size")
 		

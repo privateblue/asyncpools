@@ -36,8 +36,9 @@ class WorkerSpec extends Specification with WorkerPoolFactory {
 		
 		"be stored and retrieved" in { 
 			val storedFibs =
-				testPool.execute { implicit session => 
+				testPool execute { implicit session => 
 					setupDb
+
 					Query(FibTable).list
 				}
 
@@ -45,6 +46,20 @@ class WorkerSpec extends Specification with WorkerPoolFactory {
 			val control = data.zipWithIndex.map { case (x, y) => (y + 1, x) }
 			
 			result === control
+		}
+
+	}
+
+	"Exceptions" should {
+
+		"be sent out of workers, wrapped and thrown" in {
+			val res =
+				testPool execute { implicit session =>
+					setupDb
+
+					Query(FibTable).filter(i => i.id === 30).first
+				}
+			Await.result(res, Duration("1 seconds")) must throwA[SlickpoolsException]
 		}
 
 	}
