@@ -9,15 +9,15 @@ import com.typesafe.config.{ Config, ConfigFactory }
 
 trait WorkerPoolFactory extends PoolFactory {
 
-	private lazy val appConfig = ConfigFactory.load
+	private lazy val config = ConfigFactory.load.getConfig(configRoot)
 
 	implicit val actorSystem = 
 		ActorSystem(
 			"Slickpools",
-			appConfig.getConfig(configRoot))
+			config)
 
-	def newConfiguredPool(name: String)(implicit config: Config = appConfig) = {
-		val poolConfig = config.getConfig(s"${configRoot}.${name}")
+	def newConfiguredPool(name: String) = {
+		val poolConfig = config.getConfig(name)
 		
 		val size = poolConfig.getInt("size")
 		
