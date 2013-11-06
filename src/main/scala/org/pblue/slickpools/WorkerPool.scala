@@ -37,7 +37,7 @@ class WorkerPool(
 						supervisorStrategy = supervisor)), 
 			name = name)
 
-	private implicit val ec = actorSystem.dispatcher 
+	import actorSystem.dispatcher 
 
 	def execute[T](fn: Session => T)(implicit timeout: Timeout = defaultTimeout) = 
 		ask(router, Job(fn)).map {
