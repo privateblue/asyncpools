@@ -53,7 +53,7 @@ class WorkerSpec extends Specification with WorkerPoolFactory {
 				testPool execute { implicit session =>
 					Query(FibTable).filter(i => i.id === 30).first
 				}
-			Await.result(res, Duration("1 seconds")) must throwA[SlickpoolsException]
+			Await.result(res, Duration("1 seconds")) must throwA[AsyncPoolsException]
 		}
 
 	}

@@ -42,7 +42,7 @@ class WorkerPool(
 	def execute[T](fn: Session => T)(implicit timeout: Timeout = defaultTimeout) = 
 		ask(router, Job(fn)).map {
 			case Success(res: T) => res
-			case Failure(t) => throw new SlickpoolsException("Slickpools query execution error", t)
+			case Failure(t) => throw new AsyncPoolsException("Slickpools query execution error", t)
 		}
 
 }

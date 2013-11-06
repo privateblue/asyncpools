@@ -13,7 +13,7 @@ trait WorkerPoolFactory extends PoolFactory {
 		try {
 			ConfigFactory.load
 		} catch {
-			case ce: ConfigException => throw new SlickpoolsException("Configuration failed to load", ce)
+			case ce: ConfigException => throw new AsyncPoolsException("Configuration failed to load", ce)
 		}
 
 	implicit val actorSystem = 
@@ -27,7 +27,7 @@ trait WorkerPoolFactory extends PoolFactory {
 				config.getConfig(s"${configRoot}.${name}")
 			} catch {
 				case ce: ConfigException => 
-					throw new SlickpoolsException(s"Unable to create pool $name, due to missing configuration", ce)
+					throw new AsyncPoolsException(s"Unable to create pool $name, due to missing configuration", ce)
 			}
 		
 		val size = 
@@ -35,7 +35,7 @@ trait WorkerPoolFactory extends PoolFactory {
 				poolConfig.getInt("size")
 			} catch {
 				case ce: ConfigException => 
-					throw new SlickpoolsException(s"Unable to create pool $name, due to missing or invalid size configuration", ce)
+					throw new AsyncPoolsException(s"Unable to create pool $name, due to missing or invalid size configuration", ce)
 			}
 		
 		val defaultTimeout = 
@@ -43,7 +43,7 @@ trait WorkerPoolFactory extends PoolFactory {
 				Timeout(Duration(poolConfig.getString("defaultTimeout")).toMillis)
 			} catch {
 				case ce: ConfigException => 
-					throw new SlickpoolsException(s"Unable to create pool $name, due to missing or invalid defaultTimeout configuration", ce)
+					throw new AsyncPoolsException(s"Unable to create pool $name, due to missing or invalid defaultTimeout configuration", ce)
 			}
 
 		val maxNrOfRetries = 
@@ -51,7 +51,7 @@ trait WorkerPoolFactory extends PoolFactory {
 				poolConfig.getInt("maxNrOfRetries")
 			} catch {
 				case ce: ConfigException => 
-					throw new SlickpoolsException(s"Unable to create pool $name, due to missing or invalid maxNrOfRetries configuration", ce)
+					throw new AsyncPoolsException(s"Unable to create pool $name, due to missing or invalid maxNrOfRetries configuration", ce)
 			}
 
 		val retryRange = 
@@ -59,7 +59,7 @@ trait WorkerPoolFactory extends PoolFactory {
 				Duration(poolConfig.getString("retryRange"))
 			} catch {
 				case ce: ConfigException => 
-					throw new SlickpoolsException(s"Unable to create pool $name, due to missing or invalid retryRange configuration", ce)
+					throw new AsyncPoolsException(s"Unable to create pool $name, due to missing or invalid retryRange configuration", ce)
 			}
 
 		val driver = 
@@ -67,7 +67,7 @@ trait WorkerPoolFactory extends PoolFactory {
 				poolConfig.getString("driver")
 			} catch {
 				case ce: ConfigException => 
-					throw new SlickpoolsException(s"Unable to create pool $name, due to missing driver configuration", ce)
+					throw new AsyncPoolsException(s"Unable to create pool $name, due to missing driver configuration", ce)
 			}
 
 		val ds = 
