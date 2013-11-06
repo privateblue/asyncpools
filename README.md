@@ -1,7 +1,7 @@
-Slickpools 0.0.1
+AsyncPools 0.0.1
 ================
 
-Slickpools is an Akka based asynchronous query executor pool for Slick.
+AsyncPools is an Akka based asynchronous worker pool.
 
 To create pools, first add configuration to your application configuration:
 ```

@@ -1,4 +1,4 @@
-name := "slickpools"
+name := "asyncpools"
 
 version := "0.0.1"
 
