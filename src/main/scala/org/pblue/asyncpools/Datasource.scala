@@ -1,4 +1,4 @@
-package org.pblue.slickpools
+package org.pblue.asyncpools
 
 case class Datasource(
 	url: String,

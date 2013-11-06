@@ -5,13 +5,7 @@ AsyncPools is an Akka based asynchronous worker pool.
 
 To create pools, first add configuration to your application configuration:
 ```
-slickpools {
-	akka {
-		// Add actor system config here to configure the Akka actor system 
-		// used by Slickpools. The actor system gets created with the
-		// name "Slickpools".
-	}
-
+asyncpools {
 	my-read-pool {
 		size = 5
 		defaultTimeout = "2 seconds"
@@ -33,7 +27,7 @@ slickpools {
 ```
 After that, you can instantiate these pools in your code:
 ```scala
-import org.pblue.slickpools.WorkerPoolFactory
+import org.pblue.asyncpools.WorkerPoolFactory
 
 object MyPools with WorkerPoolFactory {
 

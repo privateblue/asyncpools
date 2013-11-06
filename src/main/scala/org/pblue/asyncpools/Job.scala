@@ -1,4 +1,4 @@
-package org.pblue.slickpools
+package org.pblue.asyncpools
 
 import scala.slick.session.Session
 
