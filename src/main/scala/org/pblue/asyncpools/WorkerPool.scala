@@ -23,7 +23,7 @@ class WorkerPool[T](
 			maxNrOfRetries = maxNrOfRetries, 
 	    	withinTimeRange = retryRange) {
 
-			case _: Throwable => Resume
+			case _: Throwable => Restart
 		}
 
 	private val router = 
