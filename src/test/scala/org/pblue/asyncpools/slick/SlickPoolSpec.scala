@@ -1,4 +1,6 @@
-package org.pblue.asyncpools
+package org.pblue.asyncpools.slick
+
+import org.pblue.asyncpools.AsyncPoolsException
 
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
@@ -7,9 +9,9 @@ import org.specs2.mutable.Specification
 
 import scala.slick.driver.H2Driver.simple._
 
-class WorkerSpec extends Specification with WorkerPoolFactory {
+class SlickPoolSpec extends Specification with SlickPoolFactory {
 
-	private val testPool = newConfiguredPool("test")
+	private val testPool = newSlickPool("test")
 
 	object FibTable extends Table[(Int, Int)]("fib") {
 		def id = column[Int]("id", O.PrimaryKey, O.AutoInc)

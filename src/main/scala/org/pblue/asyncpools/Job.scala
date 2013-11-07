@@ -1,5 +1,3 @@
 package org.pblue.asyncpools
 
-import scala.slick.session.Session
-
-case class Job[T](fn: Session => T)
+case class Job[T, U](fn: T => U)

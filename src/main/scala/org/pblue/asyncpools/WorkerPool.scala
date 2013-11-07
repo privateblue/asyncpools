@@ -1,8 +1,8 @@
 package org.pblue.asyncpools
 
 import scala.util.{ Success, Failure }
-import scala.concurrent._
-import scala.concurrent.duration._
+import scala.concurrent.Future
+import scala.concurrent.duration.Duration
 
 import akka.actor.{ ActorSystem, Props, OneForOneStrategy }
 import akka.actor.SupervisorStrategy._
@@ -10,15 +10,13 @@ import akka.routing.RoundRobinRouter
 import akka.pattern.ask
 import akka.util.Timeout
 
-import scala.slick.session.Session
-
-class WorkerPool(
+class WorkerPool[T](
 	name: String, 
 	size: Int, 
 	defaultTimeout: Timeout,
 	maxNrOfRetries: Int,
 	retryRange: Duration,
-	datasource: Datasource)(implicit actorSystem: ActorSystem) extends Pool {
+	objectFactory: PoolableObjectFactory[T])(implicit actorSystem: ActorSystem) {
 
 	private val supervisor = 
 		OneForOneStrategy(
@@ -31,7 +29,7 @@ class WorkerPool(
 	private val router = 
 		actorSystem.actorOf(
 			props = 
-				Props(classOf[Worker], datasource)
+				Props(classOf[Worker[T]], objectFactory)
 					.withRouter(RoundRobinRouter(
 						nrOfInstances = size,
 						supervisorStrategy = supervisor)), 
@@ -39,10 +37,10 @@ class WorkerPool(
 
 	import actorSystem.dispatcher 
 
-	def execute[T](fn: Session => T)(implicit timeout: Timeout = defaultTimeout) = 
-		ask(router, Job(fn)).map {
-			case Success(res: T) => res
-			case Failure(t) => throw new AsyncPoolsException("Slickpools query execution error", t)
+	def execute[U](fn: T => U)(implicit timeout: Timeout = defaultTimeout): Future[U] = 
+		ask(router, Job[T, U](fn)).map {
+			case Success(res: U) => res
+			case Failure(t) => throw new AsyncPoolsException("AsyncPools execution error", t)
 		}
 
 }
