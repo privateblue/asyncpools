@@ -35,9 +35,9 @@ import org.pblue.asyncpools.slick.SlickPoolFactory
 
 object MySlickPools with SlickPoolFactory {
 
-	val myReadPool = newSlickPool("my-read-pool")
+	val myReadPool = newConfiguredSlickPool("my-read-pool")
 	
-	val myWritePool = newSlickPool("my-write-pool")
+	val myWritePool = newConfiguredSlickPool("my-write-pool")
 	
 }
 ```
@@ -105,7 +105,14 @@ It is recommended to extend the WorkerPoolFactory and add a factory method that 
 import org.pblue.asyncpools.WorkerPoolFactory
 
 trait MyResourcePoolFactory extends WorkerPoolFactory {
-	def newMyResourcePool(name: String) = newConfiguredPool(name)(config => new MyResourceFactory)
+	def newMyResourcePool(
+		name: String, 
+		size: Int, 
+		defaultTimeout: akka.util.Timeout,
+		maxNrOfRetries: Int,
+		retryRange: Duration) = newPool(name, size, defaultTimeout, maxNrOfRetries, retryRange, new MyResourceFactory)
+		
+	def newConfiguredMyResourcePool(name: String) = newConfiguredPool(name)(config => new MyResourceFactory)
 }
 ```
 AsyncPools requires Akka 2.2, Slick, Typesafe Config, H2 1.3.167 (for its unit tests) and Specs 2.2.1.

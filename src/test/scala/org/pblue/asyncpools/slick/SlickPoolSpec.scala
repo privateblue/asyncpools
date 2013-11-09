@@ -11,7 +11,7 @@ import scala.slick.driver.H2Driver.simple._
 
 class SlickPoolSpec extends Specification with SlickPoolFactory {
 
-	private val testPool = newSlickPool("test")
+	private val testPool = newConfiguredSlickPool("test")
 
 	object FibTable extends Table[(Int, Int)]("fib") {
 		def id = column[Int]("id", O.PrimaryKey, O.AutoInc)
