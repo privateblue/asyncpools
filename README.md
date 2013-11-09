@@ -113,7 +113,8 @@ trait MyResourcePoolFactory extends WorkerPoolFactory {
 		retryRange: scala.concurrent.duration.Duration) = 
 		newPool(name, size, defaultTimeout, maxNrOfRetries, retryRange, new MyResourceFactory)
 		
-	def newConfiguredMyResourcePool(name: String) = newConfiguredPool(name)(config => new MyResourceFactory)
+	def newConfiguredMyResourcePool(name: String) = 
+		newConfiguredPool(name)(config => new MyResourceFactory)
 }
 ```
 AsyncPools requires Akka 2.2, Slick, Typesafe Config, H2 1.3.167 (for its unit tests) and Specs 2.2.1.
