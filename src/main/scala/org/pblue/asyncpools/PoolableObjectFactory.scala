@@ -1,5 +1,5 @@
 package org.pblue.asyncpools
 
-trait PoolableObjectFactory[T] {
+trait PoolableObjectFactory[+T] {
 	def create: T
 }
