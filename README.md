@@ -91,7 +91,7 @@ class MyResourceFactory extends PoolableObjectFactory[MyResource] {
 	def create = new MyResource
 }
 ```
-It is recommended to extend the WorkerPoolFactory and add a factory method that creates instances of your pools, but necessary. The below example shows the recommended way.
+It is recommended to extend the WorkerPoolFactory and add a factory method that creates instances of your pool, but not necessary. The below example shows the recommended way.
 ```scala
 import org.pblue.asyncpools.WorkerPoolFactory
 
