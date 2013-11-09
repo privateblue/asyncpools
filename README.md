@@ -110,7 +110,8 @@ trait MyResourcePoolFactory extends WorkerPoolFactory {
 		size: Int, 
 		defaultTimeout: akka.util.Timeout,
 		maxNrOfRetries: Int,
-		retryRange: Duration) = newPool(name, size, defaultTimeout, maxNrOfRetries, retryRange, new MyResourceFactory)
+		retryRange: scala.concurrent.duration.Duration) = 
+		newPool(name, size, defaultTimeout, maxNrOfRetries, retryRange, new MyResourceFactory)
 		
 	def newConfiguredMyResourcePool(name: String) = newConfiguredPool(name)(config => new MyResourceFactory)
 }
