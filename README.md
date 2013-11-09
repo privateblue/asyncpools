@@ -3,6 +3,8 @@ AsyncPools 0.0.1
 
 AsyncPools is an Akka based asynchronous worker pool. 
 
+
+
 The following example cover how to use it as a Slick query executor pool.
 
 To create Slick executor pools, first add configuration to your application configuration:
@@ -67,7 +69,11 @@ object MyRepository {
 ```
 Jobs are executed asynchronously, as AsyncPools always return ```Future```'s, and are executed in parallel, as they are passed to a pool of workers through a round-robin router. Thus you can basically contain blocking I/O in a separate thread pool, hide the synchronous nature of JDBC behind it, and continue coding in a reactive way in the rest of your application.
 
+
+
 You can set a job timeout for every ```execute``` call by having an implicit value of type ```akka.util.Timeout``` in scope, or fall back to a default timeout configured per pool. 
+
+
 
 As AsyncPools is based on Akka, you can add standard [Akka configuration](http://doc.akka.io/docs/akka/2.2.3/general/configuration.html) to further tweak AsyncPools. Here's an example of switching to a balancing dispatcher, so that all workers in a pool share the same mailbox:
 ```
@@ -83,6 +89,9 @@ akka {
 	}
 }
 ```
+
+
+
 To create a pool of different objects, create a new implementation of a PoolableObjectFactory:
 ```scala
 import org.pblue.asyncpools.PoolableObjectFactory
