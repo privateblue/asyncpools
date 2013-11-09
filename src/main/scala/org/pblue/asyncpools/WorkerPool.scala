@@ -11,12 +11,12 @@ import akka.pattern.ask
 import akka.util.Timeout
 
 class WorkerPool[T](
-	name: String, 
-	size: Int, 
-	defaultTimeout: Timeout,
-	maxNrOfRetries: Int,
-	retryRange: Duration,
-	objectFactory: PoolableObjectFactory[T])(implicit actorSystem: ActorSystem) {
+	val name: String, 
+	val size: Int, 
+	val defaultTimeout: Timeout,
+	val maxNrOfRetries: Int,
+	val retryRange: Duration,
+	val objectFactory: PoolableObjectFactory[T])(implicit actorSystem: ActorSystem) {
 
 	private val supervisor = 
 		OneForOneStrategy(
