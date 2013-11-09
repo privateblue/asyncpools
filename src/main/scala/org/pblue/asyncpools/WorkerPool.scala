@@ -29,7 +29,7 @@ class WorkerPool[T](
 	private val router = 
 		actorSystem.actorOf(
 			props = 
-				Props(classOf[Worker[T]], objectFactory)
+				Props(new Worker[T](objectFactory))
 					.withRouter(RoundRobinRouter(
 						nrOfInstances = size,
 						supervisorStrategy = supervisor)), 
