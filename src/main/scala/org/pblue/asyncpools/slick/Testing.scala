@@ -1,4 +1,4 @@
-package org.pblue.slickpools
+package org.pblue.asyncpools.slick
 
 import scala.concurrent.Await
 import scala.concurrent.duration._
@@ -23,8 +23,8 @@ object Testing {
 		fibs.take(20).toList
 	}
 
-	object ConnectionPools extends WorkerPoolFactory {
-		val testPool = newConfiguredPool("test")
+	object ConnectionPools extends SlickPoolFactory {
+		val testPool = newConfiguredSlickPool("test")
 	}
 
 	def initDb = 
@@ -50,7 +50,7 @@ object Testing {
 				println(s"First record is $first")
 				println
 			}
-			Thread.sleep(100)
+			Thread.sleep(1)
 		}
 	}
 
