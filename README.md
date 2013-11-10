@@ -1,17 +1,15 @@
-Slickpools 0.0.1
+AsyncPools 0.0.1
 ================
 
-Slickpools is an Akka based asynchronous query executor pool for Slick.
+AsyncPools is an Akka based asynchronous worker pool. 
 
-To create pools, first add configuration to your application configuration:
+
+
+The following example cover how to use it as a Slick query executor pool.
+
+To create Slick executor pools, first add configuration to your application configuration:
 ```
-slickpools {
-	akka {
-		// Add actor system config here to configure the Akka actor system 
-		// used by Slickpools. The actor system gets created with the
-		// name "Slickpools".
-	}
-
+asyncpools {
 	my-read-pool {
 		size = 5
 		defaultTimeout = "2 seconds"
@@ -33,17 +31,17 @@ slickpools {
 ```
 After that, you can instantiate these pools in your code:
 ```scala
-import org.pblue.slickpools.WorkerPoolFactory
+import org.pblue.asyncpools.slick.SlickPoolFactory
 
-object MyPools with WorkerPoolFactory {
+object MySlickPools with SlickPoolFactory {
 
-	val myReadPool = newConfiguredPool("my-read-pool")
+	val myReadPool = newConfiguredSlickPool("my-read-pool")
 	
-	val myWritePool = newConfiguredPool("my-write-pool")
+	val myWritePool = newConfiguredSlickPool("my-write-pool")
 	
 }
 ```
-This initializes an Akka actor system, and creates two router actors: ```my-read-pool``` and ```my-write-pool```, each with as many routees as you configured as the size of the pool (5 and 2 in this case). Every such routee (or worker) has a connection to the database with the configured details (JDBC driver, connection url, user name, password).
+This creates two router actors: ```my-read-pool``` and ```my-write-pool```, each with as many routees as you configured as the size of the pool (5 and 2 in this case). Every such routee (or worker) has a connection to the database with the configured details (JDBC driver, connection url, user name, password).
 
 After setting up the pools, you can send some work to them:
 ```scala
@@ -58,19 +56,65 @@ object MyRepository {
 	}
 
 	def getName(id: Int): Future[String] =
-		MyPools.myReadPool execute { implicit session =>
+		MySlickPools.myReadPool execute { implicit session =>
 			Query(table).filter(_.id === id).map(_.name).first
 		}
 		
 	def insert(id: Int, name: String) =
-		MyPools.myWritePool execute { implicit session =>
+		MySlickPools.myWritePool execute { implicit session =>
 			table.insert((id, name))
 		}
 		
 }
 ```
-Jobs are executed asynchronously, as Slickpools always return ```Future```'s, and are executed in parallel, as they are passed to a pool of workers through a round-robin router. Thus you can basically contain blocking I/O in a separate thread pool, hide the synchronous nature of JDBC behind it, and continue coding in a reactive way in the rest of your application.
+Jobs are executed asynchronously, as AsyncPools always return ```Future```'s, and are executed in parallel, as they are passed to a pool of workers through a round-robin router. Thus you can basically contain blocking I/O in a separate thread pool, hide the synchronous nature of JDBC behind it, and continue coding in a reactive way in the rest of your application.
 
-You can set a job timeout for every ```Pool.execute``` call by having an implicit value of type ```akka.util.Timeout``` in scope, or fall back to a default timeout configured per pool. 
 
-Slickpools requires Akka 2.2.1, Slick 1.0.1, Typesafe Config 1.0.0, H2 1.3.167 (for its unit tests) and Specs 2.2.1.
+
+You can set a job timeout for every ```execute``` call by having an implicit value of type ```akka.util.Timeout``` in scope, or fall back to a default timeout configured per pool. 
+
+
+
+As AsyncPools is based on Akka, you can add standard [Akka configuration](http://doc.akka.io/docs/akka/2.2.3/general/configuration.html) to further tweak AsyncPools. Here's an example of switching to a balancing dispatcher, so that all workers in a pool share the same mailbox:
+```
+akka {
+	worker-dispatcher {
+		type = BalancingDispatcher
+	}
+
+	actor.deployment {
+		"/my-read-pool/*" {
+			dispatcher = akka.worker-dispatcher
+		}
+	}
+}
+```
+
+
+
+To create a pool of different objects, create a new implementation of a PoolableObjectFactory:
+```scala
+import org.pblue.asyncpools.PoolableObjectFactory
+
+class MyResourceFactory extends PoolableObjectFactory[MyResource] {
+	def create = new MyResource
+}
+```
+It is recommended to extend the WorkerPoolFactory and add a factory method that creates instances of your pool, but not necessary. The below example shows the recommended way.
+```scala
+import org.pblue.asyncpools.WorkerPoolFactory
+
+trait MyResourcePoolFactory extends WorkerPoolFactory {
+	def newMyResourcePool(
+		name: String, 
+		size: Int, 
+		defaultTimeout: akka.util.Timeout,
+		maxNrOfRetries: Int,
+		retryRange: scala.concurrent.duration.Duration) = 
+		newPool(name, size, defaultTimeout, maxNrOfRetries, retryRange, new MyResourceFactory)
+		
+	def newConfiguredMyResourcePool(name: String) = 
+		newConfiguredPool(name)(config => new MyResourceFactory)
+}
+```
+AsyncPools requires Akka 2.2, Slick, Typesafe Config, H2 1.3.167 (for its unit tests) and Specs 2.2.1.

@@ -1,4 +1,6 @@
-package org.pblue.slickpools
+package org.pblue.asyncpools.slick
+
+import org.pblue.asyncpools.AsyncPoolsException
 
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
@@ -7,9 +9,9 @@ import org.specs2.mutable.Specification
 
 import scala.slick.driver.H2Driver.simple._
 
-class WorkerSpec extends Specification with WorkerPoolFactory {
+class SlickPoolSpec extends Specification with SlickPoolFactory {
 
-	private val testPool = newConfiguredPool("test")
+	private val testPool = newConfiguredSlickPool("test")
 
 	object FibTable extends Table[(Int, Int)]("fib") {
 		def id = column[Int]("id", O.PrimaryKey, O.AutoInc)
@@ -32,9 +34,9 @@ class WorkerSpec extends Specification with WorkerPoolFactory {
 		}
 	}
 
-	"Test data" should {
+	"execute" should {
 		
-		"be stored and retrieved" in { 
+		"retrieve previously stored data" in { 
 			val storedFibs =
 				testPool execute { implicit session => 
 					setupDb
@@ -48,18 +50,12 @@ class WorkerSpec extends Specification with WorkerPoolFactory {
 			result === control
 		}
 
-	}
-
-	"Exceptions" should {
-
-		"be sent out of workers, wrapped and thrown" in {
+		"wrap and re-throw exceptions thrown in worker" in {
 			val res =
 				testPool execute { implicit session =>
-					setupDb
-
 					Query(FibTable).filter(i => i.id === 30).first
 				}
-			Await.result(res, Duration("1 seconds")) must throwA[SlickpoolsException]
+			Await.result(res, Duration("1 seconds")) must throwA[AsyncPoolsException]
 		}
 
 	}
