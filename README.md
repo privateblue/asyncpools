@@ -33,7 +33,7 @@ After that, you can instantiate these pools in your code:
 ```scala
 import org.pblue.asyncpools.slick.SlickPoolFactory
 
-object MySlickPools with SlickPoolFactory {
+object MySlickPools extends SlickPoolFactory {
 
 	val myReadPool = newConfiguredSlickPool("my-read-pool")
 	
