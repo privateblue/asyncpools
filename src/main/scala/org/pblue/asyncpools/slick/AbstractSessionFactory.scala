@@ -22,4 +22,6 @@ trait AbstractSessionFactory extends PoolableObjectFactory[Session] {
 			.createSession()
 	}
 
+	def stop(session: Session) = session.close()
+
 }

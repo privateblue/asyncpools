@@ -1,10 +1,9 @@
 package org.pblue.asyncpools
 
-import scala.util.{ Success, Failure }
 import scala.concurrent.Future
 import scala.concurrent.duration.Duration
 
-import akka.actor.{ ActorSystem, Props, OneForOneStrategy }
+import akka.actor.{ ActorSystem, Props, OneForOneStrategy, Status }
 import akka.actor.SupervisorStrategy._
 import akka.routing.RoundRobinRouter
 import akka.pattern.ask
@@ -37,10 +36,10 @@ class WorkerPool[T](
 
 	import actorSystem.dispatcher 
 
-	def execute[U](fn: T => U)(implicit timeout: Timeout = defaultTimeout): Future[U] = 
+	def execute[U <: AnyRef](fn: T => U)(implicit timeout: Timeout = defaultTimeout): Future[U] =
 		ask(router, Job[T, U](fn)).map {
-			case Success(res: U) => res
-			case Failure(t) => throw new AsyncPoolsException("AsyncPools execution error", t)
+			case Status.Success(res: U) => res
+			case Status.Failure(t) => throw new AsyncPoolsException("AsyncPools execution error", t)
 		}
 
 }
