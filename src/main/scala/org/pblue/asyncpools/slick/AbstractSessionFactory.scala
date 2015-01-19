@@ -22,4 +22,6 @@ trait AbstractSessionFactory extends PoolableObjectFactory[Session] {
 			.createSession()
 	}
 
+        def check(session: Session) = if (session.conn.isClosed) throw new ConnectionClosedException
+
 }

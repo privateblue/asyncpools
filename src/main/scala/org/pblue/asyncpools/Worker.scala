@@ -8,8 +8,12 @@ class Worker[T](objectFactory: PoolableObjectFactory[T]) extends Actor {
 
 	private val pooledObject = objectFactory.create
 
-	def receive = {
-		case Job(fn: Function1[T, _]) => sender ! Try(fn(pooledObject))
-	}
+        def receive = {
+          case Job(fn: Function1[T, _]) => {
+            objectFactory.check(pooledObject)
+            sender ! Try(fn(pooledObject))
+            objectFactory.postCheck(pooledObject)
+          }
+        }
 
 }
