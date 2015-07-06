@@ -6,7 +6,7 @@ import scala.concurrent.duration.Duration
 
 import akka.actor.{ ActorSystem, Props, OneForOneStrategy }
 import akka.actor.SupervisorStrategy._
-import akka.routing.{RoundRobinPool, BalancingPool, RoundRobinRouter}
+import akka.routing.{Pool, RoundRobinPool, BalancingPool, RoundRobinRouter}
 import akka.pattern.ask
 import akka.util.Timeout
 
@@ -16,7 +16,8 @@ class WorkerPool[Resource](
 	val defaultTimeout: Timeout,
 	val maxNrOfRetries: Int,
 	val retryRange: Duration,
-	val objectFactory: Factory[Resource])(implicit actorSystem: ActorSystem) {
+	val objectFactory: Factory[Resource],
+	val balancing: Boolean = false)(implicit actorSystem: ActorSystem) {
 
 	protected def markJobReceived(): Unit = ()
 	protected def markSuccess(): Unit = ()
@@ -30,20 +31,28 @@ class WorkerPool[Resource](
 
 			case _: Throwable => Restart
 		}
-	
-	private val router = 
+
+	private val routerConfig: Pool with Product =
+		if (balancing)
+			BalancingPool(nrOfInstances = size,
+				supervisorStrategy = supervisor)
+		else
+			RoundRobinPool(
+				nrOfInstances = size,
+				supervisorStrategy = supervisor)
+
+	private val poolRef =
 		actorSystem.actorOf(
-			props = 
+			props =
 				Props(classOf[Worker[Resource]], objectFactory)
-					.withRouter(RoundRobinPool(
-						nrOfInstances = size,
-						supervisorStrategy = supervisor)), 
+					.withRouter(routerConfig),
 			name = name)
+
 
 	def execute[Result](fn: Resource => Result)(implicit timeout: Timeout = defaultTimeout): Future[Result] = {
 		val calledAt = System.currentTimeMillis
 		markJobReceived()
-		ask(router, Job[Resource, Result](fn)).map {
+		ask(poolRef, Job[Resource, Result](fn)).map {
 			case Success(res: Result) =>
 				markExecutionTime(System.currentTimeMillis - calledAt)
 				markSuccess()
