@@ -1,6 +1,6 @@
 package org.pblue.asyncpools
 
-import scala.util.Try
+import scala.util.{Failure, Try}
 
 import akka.actor.Actor
 
@@ -17,9 +17,14 @@ final class Worker[Resource](resourceFactory: Factory[Resource]) extends Actor {
 
   def receive = {
     case Job(fn: Function1[Resource, _]) =>
-      resourceFactory.check(pooledObject).map(throw _)
-      sender ! Try(fn(pooledObject))
-	    resourceFactory.check(pooledObject).map(throw _)
+	    val result = Try(fn(pooledObject))
+	    result match {
+		    case Failure(t) =>
+			    resourceFactory.check(pooledObject).map(throw _)
+		    case _ => ()
+	    }
+      sender ! result
+
   }
 
 }
