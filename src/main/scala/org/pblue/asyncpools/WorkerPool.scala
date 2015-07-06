@@ -18,6 +18,11 @@ class WorkerPool[Resource](
 	val retryRange: Duration,
 	val objectFactory: Factory[Resource])(implicit actorSystem: ActorSystem) {
 
+	protected def markJobReceived(): Unit = ()
+	protected def markSuccess(): Unit = ()
+	protected def markFailure(): Unit = ()
+	protected def markExecutionTime(executionTimeMs: Long): Unit = ()
+
 	private val supervisor = 
 		OneForOneStrategy(
 			maxNrOfRetries = maxNrOfRetries, 
@@ -35,10 +40,19 @@ class WorkerPool[Resource](
 						supervisorStrategy = supervisor)), 
 			name = name)
 
-	def execute[Result](fn: Resource => Result)(implicit timeout: Timeout = defaultTimeout): Future[Result] =
+	def execute[Result](fn: Resource => Result)(implicit timeout: Timeout = defaultTimeout): Future[Result] = {
+		val calledAt = System.currentTimeMillis
+		markJobReceived()
 		ask(router, Job[Resource, Result](fn)).map {
-			case Success(res: Result) => res
-			case Failure(t) => throw new AsyncPoolsException("AsyncPools execution error", t)
+			case Success(res: Result) =>
+				markExecutionTime(System.currentTimeMillis - calledAt)
+				markSuccess()
+				res
+			case Failure(t) =>
+				markExecutionTime(System.currentTimeMillis - calledAt)
+				markFailure()
+				throw new AsyncPoolsException("AsyncPools execution error", t)
 		}(executor = actorSystem.dispatcher)
+	}
 
 }
