@@ -6,7 +6,7 @@ import scala.concurrent.duration.Duration
 
 import akka.actor.{ ActorSystem, Props, OneForOneStrategy }
 import akka.actor.SupervisorStrategy._
-import akka.routing.{Pool, RoundRobinPool, BalancingPool, RoundRobinRouter}
+import akka.routing.{Pool, RoundRobinPool, BalancingPool }
 import akka.pattern.ask
 import akka.util.Timeout
 

@@ -6,7 +6,7 @@ package org.pblue.asyncpools
  */
 trait Factory[Resource] {
 	/**
-	 * Create a new [[Resource instance]].
+	 * Create a new [[Resource]] instance.
 	 * @return
 	 */
 	def create: Resource
