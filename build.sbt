@@ -12,8 +12,10 @@ lazy val root =
 
 		libraryDependencies ++= Seq(
 			"com.typesafe.akka" % "akka-actor_2.11" % "2.3.11",
-			"org.specs2" % "specs2_2.11" % "3.3.1"
+			"org.specs2" %% "specs2-core" % "3.6.2" % "test"
 		),
+
+		resolvers += "scalaz-bintray" at "http://dl.bintray.com/scalaz/releases",
 
 		scalacOptions ++= Seq(
 			"-unchecked",
@@ -22,6 +24,8 @@ lazy val root =
 			"-Xfatal-warnings",
 			"-Ywarn-dead-code",
 			"-Xmax-classfile-name", "140"
-		)
+		),
+
+		scalacOptions in Test ++= Seq("-Yrangepos")
 
 )
