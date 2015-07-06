@@ -7,5 +7,6 @@ scalaVersion := "2.11.7"
 resolvers += "Typesafe Repository" at "http://repo.typesafe.com/typesafe/releases/"
 
 libraryDependencies ++= Seq(
-	"com.typesafe.akka" % "akka-actor_2.11" % "2.3.11"
+	"com.typesafe.akka" % "akka-actor_2.11" % "2.3.11",
+	"org.specs2" % "specs2_2.11" % "3.3.1"
 )
