@@ -5,20 +5,21 @@ import scala.util.Try
 import akka.actor.Actor
 
 /**
- * Workers are able to complete [[Job]]s using an internal [[Resource]] instance.
- * @param resourceFactory
- * @tparam Resource
+ * Workers are able to complete [[Job]]s using an internal [[Resource]] instance which they acquire via the
+ * [[resourceFactory]]. This is to make sure that the same [[Resource]] reference does not get reused when the
+ * actor receives a [[akka.actor.SupervisorStrategy.Restart]] event from its supervisor.
+ * @param resourceFactory Used to acquire a new [[Resource]]  upon instantiation.
+ * @tparam Resource The type of resource managed by this [[Worker]].
  */
 final class Worker[Resource](resourceFactory: Factory[Resource]) extends Actor {
 
 	private val pooledObject = resourceFactory.create
 
   def receive = {
-    case Job(fn: Function1[Resource, _]) => {
-      resourceFactory.check(pooledObject)
+    case Job(fn: Function1[Resource, _]) =>
+      resourceFactory.check(pooledObject).map(throw _)
       sender ! Try(fn(pooledObject))
-	    resourceFactory.check(pooledObject)
-    }
+	    resourceFactory.check(pooledObject).map(throw _)
   }
 
 }
