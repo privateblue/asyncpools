@@ -1,12 +1,27 @@
-name := "asyncpools"
 
-version := "0.0.4"
+lazy val root =
+	(project in file("."))
+	.settings(
+	  name := "asyncpools",
 
-scalaVersion := "2.11.7"
+		version := "0.0.4",
 
-resolvers += "Typesafe Repository" at "http://repo.typesafe.com/typesafe/releases/"
+		scalaVersion := "2.11.7",
 
-libraryDependencies ++= Seq(
-	"com.typesafe.akka" % "akka-actor_2.11" % "2.3.11",
-	"org.specs2" % "specs2_2.11" % "3.3.1"
+		resolvers += "Typesafe Repository" at "http://repo.typesafe.com/typesafe/releases/",
+
+		libraryDependencies ++= Seq(
+			"com.typesafe.akka" % "akka-actor_2.11" % "2.3.11",
+			"org.specs2" % "specs2_2.11" % "3.3.1"
+		),
+
+		scalacOptions ++= Seq(
+			"-unchecked",
+			"-deprecation",
+			"-feature",
+			"-Xfatal-warnings",
+			"-Ywarn-dead-code",
+			"-Xmax-classfile-name", "140"
+		)
+
 )

@@ -53,10 +53,10 @@ class WorkerPool[Resource](
 		val calledAt = System.currentTimeMillis
 		markJobReceived()
 		ask(poolRef, Job[Resource, Result](fn)).map {
-			case Success(res: Result) =>
+			case Success(res) =>
 				markExecutionTime(System.currentTimeMillis - calledAt)
 				markSuccess()
-				res
+				res.asInstanceOf[Result]
 			case Failure(t) =>
 				markExecutionTime(System.currentTimeMillis - calledAt)
 				markFailure()
