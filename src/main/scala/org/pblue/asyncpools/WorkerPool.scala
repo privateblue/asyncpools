@@ -6,7 +6,7 @@ import scala.concurrent.duration.Duration
 
 import akka.actor.{ ActorSystem, Props, OneForOneStrategy }
 import akka.actor.SupervisorStrategy._
-import akka.routing.RoundRobinRouter
+import akka.routing.{RoundRobinPool, BalancingPool, RoundRobinRouter}
 import akka.pattern.ask
 import akka.util.Timeout
 
@@ -30,12 +30,12 @@ class WorkerPool[Resource](
 
 			case _: Throwable => Restart
 		}
-
+	
 	private val router = 
 		actorSystem.actorOf(
 			props = 
 				Props(classOf[Worker[Resource]], objectFactory)
-					.withRouter(RoundRobinRouter(
+					.withRouter(RoundRobinPool(
 						nrOfInstances = size,
 						supervisorStrategy = supervisor)), 
 			name = name)
