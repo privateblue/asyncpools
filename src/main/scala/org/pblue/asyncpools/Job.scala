@@ -1,3 +1,3 @@
 package org.pblue.asyncpools
 
-case class Job[T, U](fn: T => U)
+final case class Job[Resource, Result](fn: Resource => Result)

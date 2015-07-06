@@ -10,13 +10,13 @@ import akka.routing.RoundRobinRouter
 import akka.pattern.ask
 import akka.util.Timeout
 
-class WorkerPool[T](
+class WorkerPool[Resource](
 	val name: String, 
 	val size: Int, 
 	val defaultTimeout: Timeout,
 	val maxNrOfRetries: Int,
 	val retryRange: Duration,
-	val objectFactory: PoolableObjectFactory[T])(implicit actorSystem: ActorSystem) {
+	val objectFactory: Factory[Resource])(implicit actorSystem: ActorSystem) {
 
 	private val supervisor = 
 		OneForOneStrategy(
@@ -29,18 +29,16 @@ class WorkerPool[T](
 	private val router = 
 		actorSystem.actorOf(
 			props = 
-				Props(classOf[Worker[T]], objectFactory)
+				Props(classOf[Worker[Resource]], objectFactory)
 					.withRouter(RoundRobinRouter(
 						nrOfInstances = size,
 						supervisorStrategy = supervisor)), 
 			name = name)
 
-	import actorSystem.dispatcher 
-
-	def execute[U](fn: T => U)(implicit timeout: Timeout = defaultTimeout): Future[U] = 
-		ask(router, Job[T, U](fn)).map {
-			case Success(res: U) => res
+	def execute[Result](fn: Resource => Result)(implicit timeout: Timeout = defaultTimeout): Future[Result] =
+		ask(router, Job[Resource, Result](fn)).map {
+			case Success(res: Result) => res
 			case Failure(t) => throw new AsyncPoolsException("AsyncPools execution error", t)
-		}
+		}(executor = actorSystem.dispatcher)
 
 }

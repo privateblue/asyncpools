@@ -4,16 +4,16 @@ import scala.util.Try
 
 import akka.actor.Actor
 
-class Worker[T](objectFactory: PoolableObjectFactory[T]) extends Actor {
+final class Worker[Resource](resourceFactory: Factory[Resource]) extends Actor {
 
-	private val pooledObject = objectFactory.create
+	private val pooledObject = resourceFactory.create
 
-        def receive = {
-          case Job(fn: Function1[T, _]) => {
-            objectFactory.check(pooledObject)
-            sender ! Try(fn(pooledObject))
-            objectFactory.postCheck(pooledObject)
-          }
-        }
+  def receive = {
+    case Job(fn: Function1[Resource, _]) => {
+      resourceFactory.check(pooledObject)
+      sender ! Try(fn(pooledObject))
+	    resourceFactory.check(pooledObject)
+    }
+  }
 
 }

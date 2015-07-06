@@ -15,7 +15,7 @@ trait WorkerPoolFactory extends Config {
 		defaultTimeout: Timeout,
 		maxNrOfRetries: Int,
 		retryRange: Duration,
-		objectFactory: PoolableObjectFactory[T]) =
+		objectFactory: Factory[T]) =
 		new WorkerPool(
 			name = name,
 			size = size,
@@ -24,7 +24,7 @@ trait WorkerPoolFactory extends Config {
 			retryRange = retryRange,
 			objectFactory = objectFactory)
 
-	protected def newConfiguredPool[T](name: String)(factory: com.typesafe.config.Config => PoolableObjectFactory[T]) = {
+	protected def newConfiguredPool[T](name: String)(factory: com.typesafe.config.Config => Factory[T]) = {
 		val config = poolConfig(name)
 		val size = config.get("size", throw new AsyncPoolsException(s"Unable to create pool $name, due to missing or invalid size configuration")).toInt
 		val defaultTimeout = Timeout(Duration(config.get("defaultTimeout", throw new AsyncPoolsException(s"Unable to create pool $name, due to missing or invalid defaultTimeout configuration"))).toMillis)

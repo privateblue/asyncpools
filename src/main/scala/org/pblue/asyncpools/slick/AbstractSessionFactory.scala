@@ -1,10 +1,10 @@
 package org.pblue.asyncpools.slick
 
-import org.pblue.asyncpools.PoolableObjectFactory
+import org.pblue.asyncpools.Factory
 
 import scala.slick.session.{ Database, Session }
 
-trait AbstractSessionFactory extends PoolableObjectFactory[Session] {
+trait AbstractSessionFactory extends Factory[Session] {
 	
 	val url: String
 	val user: String
