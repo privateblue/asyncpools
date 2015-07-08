@@ -1,6 +1,6 @@
 package org.pblue.asyncpools.tests
 
-import org.pblue.asyncpools.testpool.ConverterPool
+import org.pblue.asyncpools.testpool.ConverterProxy
 import org.specs2.execute.{Result, AsResult}
 
 import org.specs2.mutable._
@@ -18,14 +18,14 @@ class AsyncPoolsSpec extends Specification with PoolContext {
 
 	private def await[T](f: Future[T]): T = Await.result(f, 5.seconds)
 
-	private def convert(s: String)(implicit pool: ConverterPool) = pool.execute(converter => converter.convert(s))
+	private def convert(s: String)(implicit pool: ConverterProxy) = pool.execute(converter => converter.convert(s))
 
 	"Jobs" should {
-		"return the expected result when executed without errors" in { implicit pool: ConverterPool =>
+		"return the expected result when executed without errors" in { implicit pool: ConverterProxy =>
 			await(convert(input)) === expectedOutput
 		}
 
-		"collect metrics when a single job is executed successfully" in { implicit pool: ConverterPool =>
+		"collect metrics when a single job is executed successfully" in { implicit pool: ConverterProxy =>
 			await(convert(input)) === expectedOutput
 
 			pool.receivedCount === 1
@@ -33,7 +33,7 @@ class AsyncPoolsSpec extends Specification with PoolContext {
 			pool.timerCount === 1
 		}
 
-		"collect metrics when multiple jobs are executed successfully" in { implicit pool: ConverterPool =>
+		"collect metrics when multiple jobs are executed successfully" in { implicit pool: ConverterProxy =>
 			await(convert(input)) === expectedOutput
 			await(convert(input)) === expectedOutput
 
@@ -42,13 +42,13 @@ class AsyncPoolsSpec extends Specification with PoolContext {
 			pool.timerCount === 2
 		}
 
-		"reported job completion time must as a positive number" in { implicit pool: ConverterPool =>
+		"reported job completion time must as a positive number" in { implicit pool: ConverterProxy =>
 			await(convert(input)) === expectedOutput
 
 			pool.jobDurationSum must beGreaterThanOrEqualTo(0L)
 		}
 
-		"collect metrics on errors" in { implicit pool: ConverterPool =>
+		"collect metrics on errors" in { implicit pool: ConverterProxy =>
 			Try(await(convert("fail"))).isFailure === true
 
 			pool.receivedCount === 1
@@ -56,8 +56,8 @@ class AsyncPoolsSpec extends Specification with PoolContext {
 			pool.timerCount === 1
 		}
 
-		"be able to handle bursts of jobs" in { implicit pool: ConverterPool =>
-			val jobCount: Int = pool.size * 100
+		"be able to handle bursts of jobs" in { implicit pool: ConverterProxy =>
+			val jobCount: Int = 500
 
 			await(Future.sequence(1.to(jobCount).toList.map{ _ =>
 				convert(input)
@@ -72,8 +72,8 @@ class AsyncPoolsSpec extends Specification with PoolContext {
 	
 }
 
-trait PoolContext extends ForEach[ConverterPool] {
-	override protected def foreach[R: AsResult](f: (ConverterPool) => R): Result = {
-		AsResult(f(new ConverterPool()))
+trait PoolContext extends ForEach[ConverterProxy] {
+	override protected def foreach[R: AsResult](f: (ConverterProxy) => R): Result = {
+		AsResult(f(new ConverterProxy()))
 	}
 }
