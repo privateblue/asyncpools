@@ -18,14 +18,13 @@ class ConverterPool extends WorkerPool[Converter](
 	balancing = true
 )(ActorSystem("TestActorSystem")) {
 
+	// These are here because Mockito allows querying call counts only on functions which return AnyRef
 
 	var receivedCount = 0
 	var successCount = 0
 	var errorCount = 0
 	var timerCount = 0
 	var jobDurationSum = 0L
-
-	// make these accessible
 
 	override def markJobReceived(): Unit = this.synchronized {
 		receivedCount = receivedCount + 1
