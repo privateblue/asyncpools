@@ -20,7 +20,7 @@ class AsyncPoolsSpec extends Specification with PoolContext {
 	private def convert(s: String)(implicit pool: ConverterPool) = pool.execute(converter => converter.convert(s))
 
 	"Jobs" should {
-		"return the expected result when executed without errors" >> { implicit pool: ConverterPool =>
+		"return the expected result when executed without errors" in { implicit pool: ConverterPool =>
 			await(convert(input)) === expectedOutput
 		}
 

@@ -1,6 +1,6 @@
 package org.pblue.asyncpools
 
-import scala.util.{ Success, Failure }
+import scala.util.{Try, Success, Failure}
 import scala.concurrent.Future
 import scala.concurrent.duration.Duration
 
@@ -50,17 +50,21 @@ class WorkerPool[Resource](
 
 
 	def execute[Result](fn: Resource => Result)(implicit timeout: Timeout = defaultTimeout): Future[Result] = {
-		val calledAt = System.currentTimeMillis
 		markJobReceived()
-		ask(poolRef, Job[Resource, Result](fn)).map {
-			case Success(res: Result @unchecked) =>
-				markExecutionTime(System.currentTimeMillis - calledAt)
-				markSuccess()
-				res
-			case Failure(t) =>
-				markExecutionTime(System.currentTimeMillis - calledAt)
-				markFailure()
-				throw new AsyncPoolsException("AsyncPools execution error", t)
+		ask(poolRef, Job[Resource, Result](fn)).flatMap {
+			case JobCompletion(result: Try[Result] @unchecked, durationMs) =>
+				result match {
+					case Success(res) =>
+						markExecutionTime(durationMs)
+						markSuccess()
+						Future.successful(res)
+					case Failure(t) =>
+						markExecutionTime(durationMs)
+						markFailure()
+						Future.failed(new AsyncPoolsException("AsyncPools execution error", t))
+				}
+			case _ =>
+				Future.failed(new AsyncPoolsException("Invalid message received from worker!"))
 		}(executor = actorSystem.dispatcher)
 	}
 
