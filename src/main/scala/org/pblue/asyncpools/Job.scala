@@ -6,4 +6,4 @@ package org.pblue.asyncpools
  * @tparam Resource The type of resource to leverage.
  * @tparam Result The expected result type.
  */
-final case class Job[Resource, Result](fn: Resource => Result)
+private[asyncpools] final case class Job[Resource, Result](fn: Resource => Result)

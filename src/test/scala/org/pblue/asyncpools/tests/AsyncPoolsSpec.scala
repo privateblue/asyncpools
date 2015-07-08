@@ -44,7 +44,7 @@ class AsyncPoolsSpec extends Specification with PoolContext {
 		"reported job completion time must as a positive number" in { implicit pool: ConverterPool =>
 			await(convert(input)) === expectedOutput
 
-			pool.jobDurationSum must beGreaterThan(0L)
+			pool.jobDurationSum must beGreaterThanOrEqualTo(0L)
 		}
 
 		"collect metrics on errors" in { implicit pool: ConverterPool =>
