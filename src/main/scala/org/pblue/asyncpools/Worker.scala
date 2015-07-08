@@ -18,10 +18,10 @@ final class Worker[Resource](resourceFactory: Factory[Resource]) extends Actor {
   def receive = {
     case Job(fn: Function1[Resource, _]) =>
 
-	    val recievedMs = System.currentTimeMillis
+	    val receivedMs = System.currentTimeMillis
 
 	    val result = Try(fn(pooledObject))
-	    val completion = JobCompletion(result, System.currentTimeMillis - recievedMs)
+	    val completion = JobCompletion(result, System.currentTimeMillis - receivedMs)
 
 	    result match {
 		    case Failure(t) =>
