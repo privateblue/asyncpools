@@ -1,9 +1,7 @@
 
 lazy val root =
-	(project in file("."))
+	Project("asyncpools", file("."))
 	.settings(
-	  name := "asyncpools",
-
 		version := "0.0.4",
 
 		scalaVersion := "2.11.7",

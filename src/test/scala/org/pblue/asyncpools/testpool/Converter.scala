@@ -9,7 +9,7 @@ class ConvertingFailedException extends Exception("Whatever.")
 class Converter {
 	var isUp: Boolean = true
 	def convert(str: String) =
-		if (isUp)
+		if (isUp && str != "fail")
 			str.toUpperCase
 		else
 			throw new ConvertingFailedException()
