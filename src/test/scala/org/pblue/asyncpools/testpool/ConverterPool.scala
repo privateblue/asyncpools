@@ -18,6 +18,7 @@ class ConverterPool extends WorkerPool[Converter](
 	balancing = true
 )(ActorSystem("TestActorSystem")) {
 
+
 	var receivedCount = 0
 	var successCount = 0
 	var errorCount = 0
@@ -26,22 +27,22 @@ class ConverterPool extends WorkerPool[Converter](
 
 	// make these accessible
 
-	override def markJobReceived(): Unit = {
+	override def markJobReceived(): Unit = this.synchronized {
 		receivedCount = receivedCount + 1
 		super.markJobReceived()
 	}
 
-	override def markSuccess(): Unit = {
+	override def markSuccess(): Unit = this.synchronized {
 		successCount = successCount + 1
 		super.markSuccess()
 	}
 
-	override def markFailure(): Unit = {
+	override def markFailure(): Unit = this.synchronized {
 		errorCount = errorCount + 1
 		super.markFailure()
 	}
 
-	override def markExecutionTime(executionTimeMs: Long): Unit = {
+	override def markExecutionTime(executionTimeMs: Long): Unit = this.synchronized {
 		timerCount = timerCount + 1
 		jobDurationSum = jobDurationSum + executionTimeMs
 		super.markExecutionTime(executionTimeMs)

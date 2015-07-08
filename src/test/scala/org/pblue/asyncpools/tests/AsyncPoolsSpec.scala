@@ -8,6 +8,7 @@ import org.specs2.specification.ForEach
 
 import scala.concurrent.{Future, Await}
 import scala.concurrent.duration._
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.util.Try
 
 class AsyncPoolsSpec extends Specification with PoolContext {
@@ -53,6 +54,18 @@ class AsyncPoolsSpec extends Specification with PoolContext {
 			pool.receivedCount === 1
 			pool.errorCount === 1
 			pool.timerCount === 1
+		}
+
+		"be able to handle bursts of jobs" in { implicit pool: ConverterPool =>
+			val jobCount: Int = pool.size * 100
+
+			await(Future.sequence(1.to(jobCount).toList.map{ _ =>
+				convert(input)
+			})).forall(_ === expectedOutput)
+
+			pool.receivedCount === jobCount
+			pool.successCount === jobCount
+			pool.timerCount === jobCount
 		}
 
 	}
