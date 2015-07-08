@@ -22,13 +22,7 @@ class ConverterPool extends WorkerPool[Converter](
 	var successCount = 0
 	var errorCount = 0
 	var timerCount = 0
-
-	def clearStats() = {
-		receivedCount = 0
-		successCount = 0
-		errorCount = 0
-		timerCount = 0
-	}
+	var jobDurationSum = 0L
 
 	// make these accessible
 
@@ -49,6 +43,7 @@ class ConverterPool extends WorkerPool[Converter](
 
 	override def markExecutionTime(executionTimeMs: Long): Unit = {
 		timerCount = timerCount + 1
+		jobDurationSum = jobDurationSum + executionTimeMs
 		super.markExecutionTime(executionTimeMs)
 	}
 }

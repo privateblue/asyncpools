@@ -24,7 +24,7 @@ class AsyncPoolsSpec extends Specification with PoolContext {
 			await(convert(input)) === expectedOutput
 		}
 
-		"metrics should be collected when a single job is executed successfully" in { implicit pool: ConverterPool =>
+		"collect metrics when a single job is executed successfully" in { implicit pool: ConverterPool =>
 			await(convert(input)) === expectedOutput
 
 			pool.receivedCount === 1
@@ -32,7 +32,7 @@ class AsyncPoolsSpec extends Specification with PoolContext {
 			pool.timerCount === 1
 		}
 
-		"metrics should be collected when multiple jobs are executed successfully" in { implicit pool: ConverterPool =>
+		"collect metrics when multiple jobs are executed successfully" in { implicit pool: ConverterPool =>
 			await(convert(input)) === expectedOutput
 			await(convert(input)) === expectedOutput
 
@@ -41,7 +41,13 @@ class AsyncPoolsSpec extends Specification with PoolContext {
 			pool.timerCount === 2
 		}
 
-		"metrics should be collected on errors" in { implicit pool: ConverterPool =>
+		"reported job completion time must as a positive number" in { implicit pool: ConverterPool =>
+			await(convert(input)) === expectedOutput
+
+			pool.jobDurationSum must beGreaterThan(0L)
+		}
+
+		"collect metrics on errors" in { implicit pool: ConverterPool =>
 			Try(await(convert("fail"))).isFailure === true
 
 			pool.receivedCount === 1
