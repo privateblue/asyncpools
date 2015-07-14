@@ -1,6 +1,6 @@
 package org.pblue.asyncpools.testpool
 
-import org.pblue.asyncpools.Factory
+import org.pblue.asyncpools.Manager
 
 class ConverterIsDownException extends Exception("Tough luck!")
 
@@ -15,7 +15,7 @@ class Converter {
 			throw new ConvertingFailedException()
 }
 
-class ConverterFactory extends Factory[Converter] {
+class ConverterManager extends Manager[Converter] {
 	override def create: Converter = new Converter
 
 	override def check(resource: Converter): Option[Throwable] =
@@ -23,4 +23,6 @@ class ConverterFactory extends Factory[Converter] {
 			Some(new ConverterIsDownException)
 		else
 			None
+
+	override def destroy(resource: Converter): Unit = ()
 }

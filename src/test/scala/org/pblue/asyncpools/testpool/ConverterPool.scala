@@ -15,7 +15,7 @@ object ActorFactory {
 		5,
 		1,
 		5.minutes,
-		new ConverterFactory,
+		new ConverterManager,
 		true)(system).routerRef
 
 	private val system = ActorSystem("TestSystem")

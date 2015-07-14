@@ -11,7 +11,7 @@ class Master[Resource](
 	val size: Int,
 	val maxNrOfRetries: Int,
 	val retryRange: Duration,
-	val objectFactory: Factory[Resource],
+	val manager: Manager[Resource],
 	val balancing: Boolean = false)(implicit actorSystem: ActorSystem) {
 
 	private val supervisor =
@@ -34,7 +34,7 @@ class Master[Resource](
 	val routerRef =
 		actorSystem.actorOf(
 			props =
-				Props(classOf[Worker[Resource]], objectFactory)
+				Props(classOf[Worker[Resource]], manager)
 					.withRouter(routerConfig),
 			name = name)
 
