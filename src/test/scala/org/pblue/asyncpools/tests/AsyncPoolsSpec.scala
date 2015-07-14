@@ -42,10 +42,14 @@ class AsyncPoolsSpec extends Specification with PoolContext {
 			pool.timerCount === 2
 		}
 
-		"reported job completion time must as a positive number" in { implicit pool: ConverterProxy =>
-			await(convert(input)) === expectedOutput
+		"reported job completion time must be in the expected interval" in { implicit pool: ConverterProxy =>
+			await(pool.execute{converter =>
+				val res = converter.convert(input)
+				Thread.sleep(200)
+				res}) === expectedOutput
 
-			pool.jobDurationSum must beGreaterThanOrEqualTo(0L)
+			pool.jobDurationSum must beGreaterThanOrEqualTo(200L)
+			pool.jobDurationSum must beLessThanOrEqualTo(220L)
 		}
 
 		"collect metrics on errors" in { implicit pool: ConverterProxy =>
