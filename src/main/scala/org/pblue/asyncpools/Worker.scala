@@ -27,7 +27,10 @@ final class Worker[Resource](resourceManager: Manager[Resource]) extends Actor {
 
 	    result match {
 		    case Failure(t) =>
-			    resourceManager.check(pooledObject).map(throw _)
+			    resourceManager.check(pooledObject).map { exception =>
+				    resourceManager.destroy(pooledObject)
+				    throw exception
+			    }
 		    case _ => ()
 	    }
 	    sender ! completion
