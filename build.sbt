@@ -1,7 +1,9 @@
 
 lazy val root =
-	Project("asyncpools", file("."))
+	(project in file("."))
 	.settings(
+		name := "asyncpools",
+
 		version := "0.0.4",
 
 		scalaVersion := "2.11.7",
@@ -10,6 +12,7 @@ lazy val root =
 
 		libraryDependencies ++= Seq(
 			"com.typesafe.akka" % "akka-actor_2.11" % "2.3.11",
+
 			"org.specs2" %% "specs2-core" % "3.6.2" % "test"
 		),
 

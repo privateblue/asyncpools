@@ -1,26 +1,30 @@
 package org.pblue.asyncpools.testpool
 
+import java.util.UUID
 import java.util.concurrent.TimeUnit
 
-import akka.actor.{Props, ActorSystem}
+import akka.actor.ActorSystem
 import akka.util.Timeout
 import org.pblue.asyncpools.{ExecutorProxy, Master}
 
 import scala.concurrent.duration._
 
-object ActorSystemContainer {
-	val actorSystem = ActorSystem("TestActorSystem")
 
-	val master = actorSystem.actorOf(Props(classOf[Master[Converter]],
-		"ConvertingPool",
+object ActorFactory {
+	def testRef = new Master[Converter](UUID.randomUUID().toString,
 		5,
 		1,
 		5.minutes,
 		new ConverterFactory,
-		true))
+		true)(system).routerRef
+
+	private val system = ActorSystem("TestSystem")
 }
 
-class ConverterProxy extends ExecutorProxy[Converter](ActorSystemContainer.master)(Timeout(500, TimeUnit.MILLISECONDS),
+class ConverterProxy
+	extends
+	ExecutorProxy[Converter](ActorFactory.testRef)(Timeout(500,
+	TimeUnit.MILLISECONDS),
     scala.concurrent.ExecutionContext.Implicits.global) {
 
 	// These are here because Mockito allows querying call counts only on functions which return AnyRef
